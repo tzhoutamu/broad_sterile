@@ -609,7 +609,7 @@ class WavePacketSterile_full:
 
 # -----------------------------------------------------------
 # 3 Standard-Model neutrinos and one broad sterile neutrino.
-# b: width of the sterile neutrino.
+# b: width of the sterile neutrino (absolute value).
 # Complete equation including dm12.
 # No matter effects.
 # -----------------------------------------------------------
@@ -626,6 +626,64 @@ class BroadSterile:
         self.dm2_42 = self.dm2_41 - self.dm2_21
         self.dm2_43 = self.dm2_41 - self.dm2_31
         self.b = bvalue
+
+    def fsin(self,double enu,double L,double deltam):
+        return sin(L*deltam/(4*enu))
+
+    #use np.sinc when b=0. Otherwise use this function to run
+    def sinc(self,double enu,double L):
+        return sin(L*self.b/(4*enu))/(L*self.b/(4*enu))
+        #return np.sinc(L*self.b/(4*enu))
+
+    def oscProbability(self,double E, double l):
+        enu = 1e6*E # conversion from MeV to eV
+        L = 5.06773e6*l # conversion from meters to 1/eV
+        fsinc = self.sinc(enu,L)
+        prob = 1.
+        prob += 4*cos(self.th13)**2* cos(self.th14)**2* sin(self.th12)**2* self.fsin(enu,L,-self.dm2_21)**2* (cos(self.th13)**2* cos(self.th14)**2* sin(self.th12)**2-1.- sin(self.th14)**2*(fsinc-1))
+        prob += 4*cos(self.th14)**2* sin(self.th13)**2* self.fsin(enu,L,-self.dm2_31)**2* (cos(self.th14)**2* sin(self.th13)**2-1. -sin(self.th14)**2*(fsinc-1))
+        prob += 4*sin(self.th14)**2* self.fsin(enu,L,-self.dm2_41)**2*(sin(self.th14)**2*fsinc**2-fsinc-sin(self.th14)**2*(fsinc-1))
+        prob += sin(self.th14)**4* (fsinc-1)**2 + 2*sin(self.th14)**2*(fsinc-1)
+        prob += 8*cos(self.th13)**2*cos(self.th14)**4*sin(self.th12)**2*sin(self.th13)**2*cos(L*self.dm2_32/(4*enu))*self.fsin(enu,L,-self.dm2_21)*self.fsin(enu,L,-self.dm2_31)
+        prob += 8*cos(self.th13)**2*cos(self.th14)**2*sin(self.th12)**2*sin(self.th14)**2*cos(L*self.dm2_42/(4*enu))*self.fsin(enu,L,-self.dm2_21)*self.fsin(enu,L,-self.dm2_41)*fsinc
+        prob += 8*cos(self.th14)**2*sin(self.th13)**2*sin(self.th14)**2*cos(L*self.dm2_43/(4*enu))*self.fsin(enu,L,-self.dm2_31)*self.fsin(enu,L,-self.dm2_41)*fsinc
+
+        return prob
+
+    def oscProbability_av(self,double E, double l):
+        enu = 1e6*E # conversion from MeV to eV
+        L = 5.06773e6*l # conversion from meters to 1/eV
+        fsinc = self.sinc(enu,L)
+        prob = 1.
+        prob += 4*cos(self.th13)**2* cos(self.th14)**2* sin(self.th12)**2* self.fsin(enu,L,-self.dm2_21)**2* (cos(self.th13)**2* cos(self.th14)**2* sin(self.th12)**2-1.- sin(self.th14)**2*(fsinc-1))
+        prob += 4*cos(self.th14)**2* sin(self.th13)**2* self.fsin(enu,L,-self.dm2_31)**2* (cos(self.th14)**2* sin(self.th13)**2-1. -sin(self.th14)**2*(fsinc-1))
+        prob += 4*sin(self.th14)**2* self.fsin(enu,L,-self.dm2_41)**2*(sin(self.th14)**2*fsinc**2-fsinc-sin(self.th14)**2*(fsinc-1))
+        prob += sin(self.th14)**4* (fsinc-1)**2 + 2*sin(self.th14)**2*(fsinc-1)
+        prob += 8*cos(self.th13)**2*cos(self.th14)**4*sin(self.th12)**2*sin(self.th13)**2*cos(L*self.dm2_32/(4*enu))*self.fsin(enu,L,-self.dm2_21)*self.fsin(enu,L,-self.dm2_31)
+        prob += 8*cos(self.th13)**2*cos(self.th14)**2*sin(self.th12)**2*sin(self.th14)**2*cos(L*self.dm2_42/(4*enu))*self.fsin(enu,L,-self.dm2_21)*self.fsin(enu,L,-self.dm2_41)*fsinc
+        prob += 8*cos(self.th14)**2*sin(self.th13)**2*sin(self.th14)**2*cos(L*self.dm2_43/(4*enu))*self.fsin(enu,L,-self.dm2_31)*self.fsin(enu,L,-self.dm2_41)*fsinc
+
+        return prob
+
+# -----------------------------------------------------------
+# 3 Standard-Model neutrinos and one broad sterile neutrino.
+# b: fractional breadths of the sterile neutrino (b = b_absolute/m_{41}^2).
+# Complete equation including dm12.
+# No matter effects.
+# -----------------------------------------------------------
+
+class BroadSterileFrac:
+    def __init__(self,Sin22Th14 = 0.01,DM2_41 = 0.1, bfrac = 1e-4):
+        self.th14 = np.arcsin(sqrt(Sin22Th14))/2.
+        self.th13 = np.arcsin(sqrt(0.0868525))/2.
+        self.th12 = 0.583763
+        self.dm2_41 = DM2_41
+        self.dm2_31 = 2.515e-3
+        self.dm2_21 = 7.42e-5
+        self.dm2_32 = self.dm2_31 - self.dm2_21
+        self.dm2_42 = self.dm2_41 - self.dm2_21
+        self.dm2_43 = self.dm2_41 - self.dm2_31
+        self.b = bfrac*self.dm2_41
 
     def fsin(self,double enu,double L,double deltam):
         return sin(L*deltam/(4*enu))

@@ -6,9 +6,8 @@ import numpy as np
 import time
 import os
 
-homedir = os.path.realpath(__file__)[:-len('BEST/BroadFitTable.py')]
-datadir = homedir + 'BEST/PlotData/'
-
+homedir = os.path.realpath(__file__)[:-len('PROSPECT/BroadFitTable.py')]
+datadir = homedir + 'PROSPECT/PlotData/'
 
 # This is an example program of how to obtain points of the chi2
 # Here we use the variables and functions from FitClass.py
@@ -19,8 +18,8 @@ datadir = homedir + 'BEST/PlotData/'
 m_n = 60
 a_n = 60
 b_n = 60
-datmass1 = np.linspace(0.08,10,m_n) #0.08-10
-datangl1 = np.linspace(4e-3,1,a_n) #0.004-1
+datmass1 = np.logspace(np.log10(0.08),np.log10(2),m_n) #0.08-2
+datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
 datab1 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n) #fractional breadth
 
 # meshgrid returns 2 2-dimensional arrays that represent the x and y coordinates of all points in the grid.

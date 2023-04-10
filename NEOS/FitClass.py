@@ -122,7 +122,7 @@ class BroadFit:
         if self.Broad == False:
             model = Models.PlaneWaveSterile(Sin22Th14=angl, DM2_41=mass)
         elif self.Broad == True:
-            model = Models.BroadSterile(Sin22Th14=angl, DM2_41=mass, bvalue=b)
+            model = Models.BroadSterileFrac(Sin22Th14=angl, DM2_41=mass, bfrac=b)
 
         wdwd = self.what_do_we_do(mass)
         chi2 = self.fitter.get_chi2(model, do_we_integrate=wdwd['integrate'], do_we_average=wdwd['average'],
