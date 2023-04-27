@@ -20,13 +20,21 @@ Model_osc = Models.PlaneWaveSM()
 # Model_coh = Models.WavePacketSM()
 
 
+# # Broad data
+# # ------------
+dm2_bro = 0.57
+sin2_bro = 0.27
+b = 0.99
+
 # # Sterile data
 # # ------------
-sin2 = 0.5
-dm2 = 6
-Model_ste = Models.PlaneWaveSterile(DM2_41 = dm2,Sin22Th14 = sin2)
-# # Model_ste = Models.WavePacketSterile(DM2_41 = dm2,Sin22Th14 = sin2)
+dm2_ste = 0.602
+sin2_ste = 0.169
 
+Model_ste = Models.PlaneWaveSterile(DM2_41 = dm2_ste,Sin22Th14 = sin2_ste)
+Model_bro = Models.BroadSterileFrac(DM2_41 = dm2_bro,Sin22Th14 = sin2_bro,bfrac = b)
+#Model_ste = Models.WavePacketSterile(DM2_41 = dm2,Sin22Th14 = sin2)
+#Model_ste = Models.BroadSterileFrac(DM2_41 = dm2,Sin22Th14 = sin2,bfrac = b)
 
 # -----------------------------------------------------
 # PRELIMINAR COMPUTATIONS
@@ -35,7 +43,8 @@ Model_ste = Models.PlaneWaveSterile(DM2_41 = dm2,Sin22Th14 = sin2)
 begin_time = time.time()
 
 predSM = fitter.get_expectation(Model_osc, do_we_integrate = False)
-pred = fitter.get_expectation(Model_ste, do_we_integrate = True)
+predST = fitter.get_expectation(Model_ste, do_we_integrate = True)
+predBS = fitter.get_expectation(Model_bro, do_we_integrate = True)
 
 end_time = time.time()
 print(end_time-begin_time)
@@ -43,11 +52,13 @@ print(end_time-begin_time)
 
 data = fitter.get_data_per_baseline()
 Me = 0.0
-Pe = 0.0
+PeST = 0.0
+PeBS = 0.0
 PeSM = 0.0
 for bl in fitter.Baselines:
     Me += np.sum(data[bl])
-    Pe += np.sum(pred[bl])
+    PeST += np.sum(predST[bl])
+    PeBS += np.sum(predBS[bl])
     PeSM += np.sum(predSM[bl])
 
 bkg = fitter.get_bkg_per_baseline()
@@ -90,7 +101,8 @@ axev = axev.flatten()
 
 for bl in fitter.Baselines:
     i = bl-1
-    axev[i].step(x_ax,pred[bl], where = 'mid', label = "Our prediction", linewidth = 2 )
+    axev[i].step(x_ax,predBS[bl], where='mid', label="Broad prediction", linewidth=2)
+    axev[i].step(x_ax,predST[bl], where = 'mid', label = "Original prediction", linewidth = 2 )
     axev[i].step(x_ax,predSM[bl], where = 'mid', label = "No oscillation prediction", linewidth = 2)
     axev[i].errorbar(x_ax,data[bl], fmt = 'ok', label = "PROSPECT data")
     axev[i].set_xlabel("Energy (MeV)", fontsize = 16)
@@ -99,10 +111,10 @@ for bl in fitter.Baselines:
     axev[i].tick_params(axis='y', labelsize=13)
     # axev.axis([1.,7.,0.,60.])
     axev[i].grid(linestyle="--")
-    # axev[i].legend(loc="upper right",fontsize=16)
+    axev[i].legend(loc="upper right",fontsize=16)
 
-figev.suptitle(r'Sterile with $\Delta m^2_{41} = %.2f eV^2$, $\sin^2 2\theta_{14} = %.2f$'%(dm2,sin2), fontsize = 17)
-figev.savefig(plotdir+"EventExpectation/EventExpectation_%.2f_%.3f_ste.png"%(dm2,sin2))
+figev.suptitle(r'Sterile with $\Delta m^2_{41} = %.2f eV^2$, $\sin^2 2\theta_{14} = %.2f $(Orange); Broad with $\Delta m^2_{41} = %.2f eV^2$, $\sin^2 2\theta_{14} = %.2f$, $\tilde{b} = %.2f$(Blue)'%(dm2_ste,sin2_ste,dm2_bro,sin2_bro,b), fontsize = 17)
+figev.savefig(plotdir+"EventExpectation/EventExpectation_%.2f_%.2f_ste_%.2f_%.2f_bro.png"%(dm2_ste,sin2_ste,dm2_bro,sin2_bro))
 
 
 # -------------------------------------------------------
@@ -114,9 +126,10 @@ axev = axev.flatten()
 
 for bl in fitter.Baselines:
     i = bl-1
-
-    axev[i].step(x_ax,pred[bl]*PeSM/Pe/predSM[bl], where = 'mid', label = "Our prediction", linewidth = 2 )
-    axev[i].errorbar(x_ax,data[bl]/Me*Pe/pred[bl], fmt = 'ok', label = "PROSPECT data")
+    axev[i].step(x_ax,predBS[bl]*PeSM/PeBS/predSM[bl], where = 'mid', label = "Broad prediction", linewidth = 2 )
+    axev[i].step(x_ax,predST[bl]*PeSM/PeST/predSM[bl], where = 'mid', label = "Original prediction", linewidth = 2 )
+    axev[i].errorbar(x_ax,data[bl]/Me*PeBS/predBS[bl], fmt = 'ok', label = "PROSPECT data based on broad prediction")
+    axev[i].errorbar(x_ax, data[bl] / Me * PeST / predST[bl], fmt='ok', label="PROSPECT data based on original prediction")
 
     axev[i].plot(x_ax,[1 for x in x_ax], linestyle = 'dashed', color = 'k', zorder = 0.01)
 
@@ -126,8 +139,7 @@ for bl in fitter.Baselines:
     axev[i].tick_params(axis='y', labelsize=13)
     axev[i].axis([0.8,7.2,0.0,2.0])
     axev[i].grid(linestyle="--")
-    # axev[i].legend(loc="upper right",fontsize=16)
+    axev[i].legend(loc="upper right",fontsize=16)
 
-
-figev.suptitle(r'Sterile with $\Delta m^2_{41} = %.2f eV^2$, $\sin^2 2\theta_{14} = %.2f$'%(dm2,sin2), fontsize = 17)
-figev.savefig(plotdir+"EventRatio/EventRatio_%.2f_%.3f_ste.png"%(dm2,sin2))
+figev.suptitle(r'Sterile with $\Delta m^2_{41} = %.2f eV^2$, $\sin^2 2\theta_{14} = %.2f$; Broad with $\Delta m^2_{41} = %.2f eV^2$, $\sin^2 2\theta_{14} = %.2f$, $\tilde{b} = %.2f$'%(dm2_ste,sin2_ste,dm2_bro,sin2_bro,b), fontsize = 17)
+figev.savefig(plotdir+"EventRatio/EventRatio_%.2f_%.2f_ste_%.2f_%.2f_bro.png"%(dm2_ste,sin2_ste,dm2_bro,sin2_bro))

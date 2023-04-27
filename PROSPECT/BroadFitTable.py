@@ -18,7 +18,7 @@ datadir = homedir + 'PROSPECT/PlotData/'
 m_n = 60
 a_n = 60
 b_n = 60
-datmass1 = np.logspace(np.log10(0.08),np.log10(2),m_n) #0.08-2
+datmass1 = np.logspace(np.log10(2),np.log10(10),m_n) #0.08-2
 datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
 datab1 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n) #fractional breadth
 

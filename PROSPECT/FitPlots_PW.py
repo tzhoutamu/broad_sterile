@@ -53,7 +53,7 @@ def stylize(axxis,contours,t_ax = [1e-3,1], m_ax = [1e-2,10]):
     axxis.set_ylabel(r"$\Delta m^2_{41} (\textrm{eV}^2)$", fontsize = 24)
     axxis.set_xlabel(r"$\sin^2 2 \theta_{14}$", fontsize = 24)
     axxis.set_xlim([0.004,1])
-    axxis.set_ylim([0.08,25.])
+    axxis.set_ylim([0.08,2])
     legend_elements = [Line2D([0], [0], color=color1, ls = '-', lw=2, label=r'$1\sigma$ (68\% C.L.)'),
                        Line2D([0], [0], color=color2, ls = '-', lw=2, label=r'$2\sigma$ (95\% C.L.)'),
                        Line2D([0], [0], color=color3, ls = '-', lw=2, label=r'$3\sigma$ (99\% C.L.)'),
@@ -71,14 +71,14 @@ size = (7,7)
 margins = dict(left=0.16, right=0.97,bottom=0.1, top=0.93)
 
 # -------------------------------------------------
-# STERILE PLANE WAVE CONTOUR - PLANE WAVE FORMALISM
+# STERILE CONTOUR - STANDARD FORMALISM
 # -------------------------------------------------
 
-print('Plane wave')
+print('Standard')
 # We load the data
-mass_PW = np.load(datadir+'PWSterileMass.npy')
-angle_PW = np.load(datadir+'PWSterileAngle.npy')
-chi2_PW = np.load(datadir+'PWSterileChi2.npy')
+mass_PW = np.load(datadir+'PWSterileMass_2.npy')
+angle_PW = np.load(datadir+'PWSterileAngle_2.npy')
+chi2_PW = np.load(datadir+'PWSterileChi2_2.npy')
 
 # We find which is the point with minimum chi2, i.e. our best fit.
 min_index = np.where(chi2_PW[:] == np.min(chi2_PW[:]))[0]
@@ -100,7 +100,7 @@ axBF.scatter(angle_PW[min_index],mass_PW[min_index],marker = '+', label = r'Best
 stylize(axBF,conts)
 
 figBF.suptitle(r'Best fit:  $\Delta m^2_{41} = %.2f \textrm{ eV}^2$, $\sin^2 2\theta_{14} = %.3f$. Total $\chi^2 = %.2f$'%(mass_PW[min_index],angle_PW[min_index], bestfit), fontsize = titlesize)
-figBF.savefig(plotdir+'PWContour_bestfit_test.png')
+figBF.savefig(plotdir+'PWContour_bestfit_bs.png')
 
 
 # PLOT WITH RESPECT TO THE NULL HYPOTHESIS
@@ -115,4 +115,4 @@ axNH.scatter(angle_PW[min_index],mass_PW[min_index],marker = '+', label = 'Our b
 stylize(axNH,conts)
 
 figNH.suptitle('Null hypothesis: total $\chi^2 = %.2f$'%(null_hyp_PW), fontsize = titlesize)
-figNH.savefig(plotdir+'PWContour_nullhyp_test.png')
+figNH.savefig(plotdir+'PWContour_nullhyp_bs.png')

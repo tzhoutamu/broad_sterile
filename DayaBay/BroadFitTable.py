@@ -18,7 +18,7 @@ datadir = homedir + 'DayaBay/PlotData/'
 m_n = 60
 a_n = 60
 b_n = 60
-datmass1 = np.logspace(-4,np.log10(0.1499),m_n)
+datmass1 = np.logspace(np.log10(0.08),np.log10(2),m_n)
 datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
 datab1 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n) #fractional breadth
 

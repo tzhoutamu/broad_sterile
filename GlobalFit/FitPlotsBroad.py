@@ -79,13 +79,13 @@ print('Plane wave')
 # We load the data
 #mass_PW = np.load(datadir+'BroadSterileMass.npy')
 #angle_PW = np.load(datadir+'BroadSterileAngle.npy')
-b_PW = np.load(datadir+'BroadSterileb.npy')
-chi2_PW = np.load(datadir+'BroadSterileChi2.npy')
-mass = np.load(datadir+'BroadSterileMass.npy')
-angle = np.load(datadir+'BroadSterileAngle.npy')
+b_PW = np.load(datadir+'BroadSterileb_noint.npy')
+chi2_PW = np.load(datadir+'BroadSterileChi2_noint.npy')
+mass = np.load(datadir+'BroadSterileMass_noint.npy')
+angle = np.load(datadir+'BroadSterileAngle_noint.npy')
 
-m_n = 10
-a_n = 10
+m_n = 60
+a_n = 60
 
 datmass1 = np.logspace(np.log10(0.08),1,m_n) #0.08-10
 datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
@@ -97,7 +97,7 @@ mass_grid, angle_grid= np.meshgrid(datmass1, datangl1)
 mass_PW, angle_PW= np.ravel(mass_grid), np.ravel(angle_grid)
 
 # Reshape fourth array to match shape of grids
-chi2_PW_reshaped = np.reshape(chi2_PW, (10, 10, 5))
+chi2_PW_reshaped = np.reshape(chi2_PW, (60, 60, 30))
 # Compute minimum value of fourth array along third axis
 min_chi2_PW = np.ravel(np.min(chi2_PW_reshaped, axis=2))
 
@@ -122,7 +122,7 @@ axBF.scatter(angle[min_index],mass[min_index],marker = '+', label = r'Best fit')
 stylize(axBF,conts)
 
 #figBF.suptitle(r'Best fit:  $\Delta m^2_{41} = %.2f \textrm{ eV}^2$, $\sin^2 2\theta_{14} = %.3f$. Total $\chi^2 = %.2f$'%(mass_PW[min_index],angle_PW[min_index], bestfit), fontsize = titlesize)
-figBF.savefig(plotdir+'Broad_bestfit_marg.png')
+figBF.savefig(plotdir+'Broad_bestfit_marg_noint.png')
 
 # PLOT WITH RESPECT TO THE NULL HYPOTHESIS
 # -----------------------------------------
@@ -136,4 +136,4 @@ axNH.scatter(angle[min_index],mass[min_index],marker = '+', label = 'Our best fi
 stylize(axNH,conts)
 
 figNH.suptitle('Null hypothesis: total $\chi^2 = %.2f$'%(null_hyp_WP), fontsize = titlesize)
-figNH.savefig(plotdir+'Broad_nullhyp_marg.png')
+figNH.savefig(plotdir+'Broad_nullhyp_marg_noint.png')

@@ -196,7 +196,7 @@ class Neos:
             max_energy_fine_index = self.FindFineBinIndex(self.DataUpperBinEdges[i])
 
         W = self.get_width(set_name) # in meters, the detector total width is 2W
-        ndL = 10 # We integrate through L with ten points. It is probably enough.
+        ndL = 3 # We integrate through L with ten points. It is probably enough.
         dL = (2*W)/(ndL-1)
 
         for reactor in self.reactor_names:
@@ -306,7 +306,7 @@ class Neos:
             max_energy_fine_index = self.FindFineBinIndex(self.DataUpperBinEdges[i])
 
         W = self.get_width(set_name) # in meters, the detector total width is 2W
-        ndL = 10 # We only integrate through L with three points. It is probably enough.
+        ndL = 3 # We only integrate through L with three points. It is probably enough.
         dL = (2*W)/(ndL-1)
 
 

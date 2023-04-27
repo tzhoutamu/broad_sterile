@@ -10,8 +10,8 @@ datadir = homedir + 'NEOS/PlotData/'
 # Here we use the variables and functions from FitClass.py
 
 # Tune these arrays to the interval of parameters you wish to study
-datangl1 = np.logspace(np.log10(4e-3),0,160)
-datmass1 = np.logspace(np.log10(0.08),0,160)
+datangl1 = np.logspace(np.log10(4e-3),0,1)
+datmass1 = np.logspace(np.log10(2),np.log10(3),1)
 
 begin = time.time()
 fit = FC.SterileFit(wave_packet = True, use_HM = False)

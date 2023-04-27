@@ -47,7 +47,9 @@ def txt_to_array(filename, sep = ","):
     for line in file_lines:
         mat.append(line.strip().split(sep))
     mat = np.array(mat).astype(np.float)
-    return mat
+    # remove 3rd column as that's from an outdated data
+    new_mat = np.delete(mat, 2, axis=1)
+    return new_mat
 
 
 

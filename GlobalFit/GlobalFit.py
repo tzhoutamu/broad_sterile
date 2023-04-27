@@ -170,7 +170,7 @@ class GlobalFit:
         # For DB, the Poisson likelihood is sufficient.
         TotalLogPoisson = 0.0
         for set_name in self.sets_names[:-1]:
-            lamb = exp_events[set_name
+            lamb = exp_events[set_name]
             k = Data[set_name]
             TotalLogPoisson += np.sum(k - lamb + k*np.log(lamb/k))
 

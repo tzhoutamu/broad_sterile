@@ -16,9 +16,9 @@ datadir = homedir + 'GlobalFit/PlotData/'
 # Tune these arrays to the interval of parameters you wish to study
 
 # create arrays of mass and angle evenly spaced on a logarithmic scale.
-m_n = 30
-a_n = 30
-b_n = 10
+m_n = 10
+a_n = 10
+b_n = 30
 datmass1 = np.logspace(np.log10(0.08),1,m_n) #0.08-10
 datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
 datab1 = np.logspace(np.log10(1e-2),1,b_n) #0.01-10

@@ -58,6 +58,7 @@ class SterileFit:
 
         wdwd = self.what_do_we_do(mass)
         chi2 = self.fitter.get_chi2(model,do_we_integrate = wdwd['integrate'], do_we_average = wdwd['average'], use_HM = self.UseHM)
+        #chi2 = self.fitter.get_chi2(model, do_we_integrate=True, do_we_average=wdwd['average'], use_HM=self.UseHM)
         print(mass,angl,chi2)
         return chi2
 
