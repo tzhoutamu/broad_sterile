@@ -134,7 +134,7 @@ class Prospect:
         # we want to make events inside the data bin i.
 
         W = self.get_width(segment) # in meters, the detector total width is 2W
-        ndL = 3 # We only integrate through L with five points. It is probably enough.
+        ndL = 5 # We only integrate through L with five points. It is probably enough.
         dL = (2*W)/(ndL-1)
 
         for reactor in self.reactor_names:
