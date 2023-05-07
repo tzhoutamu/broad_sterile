@@ -10,8 +10,8 @@ In this ReadMe we briefly introduce the program and the different analyses and p
 In order for most scripts to work, one needs to compile the following file:
 
 ```
-user@user: ~/broad_neutrino$ cd Common_cython
-user@user: ~/broad_neutrino/Common_cython$ sh compile.sh
+user@user: ~/broad_sterile$ cd Common_cython
+user@user: ~/broad_sterile/Common_cython$ sh compile.sh
 ```
 
 This will prepare the necessary libraries, which are written in Cython. You will need `python3-dev` in order to run these files. This same command must be done each time a modification is done to the file `Models.pyx` or `HuberMullerFlux.py`.
@@ -24,12 +24,12 @@ The main folder of the program contains 5+2 directories. Namely:
 All the Python files `.py` can be run with the `python3` command on your terminal.
 
 ```
-user@user: ~/broad_neutrino$ cd NEOS
-user@user: ~/broad_neutrino/NEOS$ python3 FitPlotsBroad.py
+user@user: ~/broad_sterile$ cd NEOS
+user@user: ~/broad_sterile/NEOS$ python3 FitPlotsBroad.py
 ```
 or
 ```
-user@user: ~/broad_neutrino$ python3 NEOS/FitPlotsBroad.py
+user@user: ~/broad_sterile$ python3 NEOS/FitPlotsBroad.py
 ```
 
 ## Experiment analysis directories
