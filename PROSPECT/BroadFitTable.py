@@ -15,12 +15,12 @@ datadir = homedir + 'PROSPECT/PlotData/'
 # Tune these arrays to the interval of parameters you wish to study
 
 # create arrays of mass and angle evenly spaced on a logarithmic scale.
-m_n = 60
-a_n = 60
-b_n = 60
-datmass1 = np.logspace(np.log10(2),np.log10(10),m_n) #0.08-2
-datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
-datab1 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n) #fractional breadth
+m_n1 = 60
+a_n1 = 60
+b_n1 = 40
+datmass1 = np.logspace(np.log10(0.08),1,m_n1) #0.08-10
+datangl1 = np.logspace(np.log10(4e-3),0,a_n1) #0.004-1
+datab1 = np.logspace(np.log10(1e-2),np.log10(0.99),b_n1) #fractional breadth
 
 # meshgrid returns 2 2-dimensional arrays that represent the x and y coordinates of all points in the grid.
 mass_grid, angle_grid, b_grid = np.meshgrid(datmass1, datangl1, datab1)
@@ -30,9 +30,9 @@ mass_data, angle_data, b_data = np.ravel(mass_grid), np.ravel(angle_grid), np.ra
 chi2_data = np.empty_like(mass_data)
 
 fit = FC.BroadFit(broad_sterile = True)
-np.save(datadir+'BroadSterileMass_frac.npy', mass_data)
-np.save(datadir+'BroadSterileAngle_frac.npy', angle_data)
-np.save(datadir+'BroadSterileb_frac.npy', b_data)
+np.save(datadir+'BroadSterileMass_test.npy', mass_data)
+np.save(datadir+'BroadSterileAngle_test.npy', angle_data)
+np.save(datadir+'BroadSterileb_test.npy', b_data)
 
 def job(i):
     m = mass_data[i]

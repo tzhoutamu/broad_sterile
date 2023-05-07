@@ -16,12 +16,12 @@ datadir = homedir + 'GlobalFit/PlotData/'
 # Tune these arrays to the interval of parameters you wish to study
 
 # create arrays of mass and angle evenly spaced on a logarithmic scale.
-m_n = 10
-a_n = 10
-b_n = 30
+m_n = 60
+a_n = 60
+b_n = 40
 datmass1 = np.logspace(np.log10(0.08),1,m_n) #0.08-10
 datangl1 = np.logspace(np.log10(4e-3),0,a_n) #0.004-1
-datab1 = np.logspace(np.log10(1e-2),1,b_n) #0.01-10
+datab1 = np.logspace(np.log10(1e-2),np.log10(0.99),b_n) #0.01-0.99
 
 # meshgrid returns 2 2-dimensional arrays that represent the x and y coordinates of all points in the grid.
 mass_grid, angle_grid, b_grid = np.meshgrid(datmass1, datangl1, datab1)
@@ -31,9 +31,9 @@ mass_data, angle_data, b_data = np.ravel(mass_grid), np.ravel(angle_grid), np.ra
 chi2_data = np.empty_like(mass_data)
 
 fit = FC.BroadFit(broad_sterile = True)
-np.save(datadir + 'BroadSterileMass.npy', mass_data)
-np.save(datadir + 'BroadSterileAngle.npy', angle_data)
-np.save(datadir + 'BroadSterileb.npy', b_data)
+np.save(datadir + 'BroadSterileMass_test.npy', mass_data)
+np.save(datadir + 'BroadSterileAngle_test.npy', angle_data)
+np.save(datadir + 'BroadSterileb_test.npy', b_data)
 
 def job(i):
     m = mass_data[i]
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     #num_cores = int(os.getenv('SLURM_CPUS_PER_TASK'))
     #pool = mp.Pool(num_cores)
     pool.map(job, range(mass_data.shape[0]))
-    np.save(datadir + 'BroadSterileChi2.npy', chi2_data[:])
+    np.save(datadir + 'BroadSterileChi2_test.npy', chi2_data[:])
     end = time.time()
     pool.close()
     # print out total run time

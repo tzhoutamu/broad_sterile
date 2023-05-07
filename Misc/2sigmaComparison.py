@@ -86,8 +86,8 @@ def stylize(axxis):
     axxis.set_yscale('log')
     axxis.set_ylabel(r"$\Delta m^2_{41} (\textrm{eV}^2)$", fontsize = 24)
     axxis.set_xlabel(r"$\sin^2 2 \theta_{14}$", fontsize = 24)
-    axxis.set_xlim([0.004,1])
-    axxis.set_ylim([0.08,10])
+    axxis.set_xlim([0.001,1])#0.004,1
+    axxis.set_ylim([0.01,10])#0.08,10
     legend_elements = [Line2D([0], [0], color=color1, ls = '-', lw=2, label=r'\text{DayaBay}'),
                        Line2D([0], [0], color=color2, ls = '-', lw=2, label=r'\text{NEOS}'),
                        Line2D([0], [0], color=color3, ls = '-', lw=2, label=r'\text{PROSPECT}'),
@@ -175,4 +175,4 @@ axPW.scatter(angle_NE[min_index_NE],mass_NE[min_index_NE],marker = '+', color = 
 axPW.scatter(angle_PR[min_index_PR],mass_PR[min_index_PR],marker = '+', color = color3, label = r'Best fit')
 axPW.scatter(angle_DN[min_index_DN],mass_DN[min_index_DN],marker = '+', color = color4, label = r'Best fit')
 stylize(axPW)
-figPW.savefig(plotdir+'PW_2sigma_nullhyp.png')
+figPW.savefig(plotdir+'PW_2sigma_nullhyp_comp.png')

@@ -7,6 +7,8 @@ sys.path.append(homedir+common_dir)
 sys.path.append(homedir+'NEOS/')
 sys.path.append(homedir+'DayaBay/')
 sys.path.append(homedir+'PROSPECT/')
+sys.path.append(homedir+'GlobalFit/')
+sys.path.append(homedir+"BEST/")
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
@@ -16,12 +18,16 @@ import Models
 import PROSPECT as PS
 import NEOS
 import DayaBay as DB
+import GlobalFit as GF
+import BEST
 #from BroadFitTable import m_n, a_n, b_n, datmass1, datangl1
 
 path_to_style= homedir+common_dir
 datadir_pros = homedir+'PROSPECT/PlotData/'
 datadir_neos = homedir+'NEOS/PlotData/'
 datadir_daya = homedir+'DayaBay/PlotData/'
+datadir_dane = homedir+'GlobalFit/PlotData/'
+datadir_best = homedir+'BEST/PlotData/'
 plotdir = homedir+'Misc/GlobalFitPlots/'
 plt.style.use(path_to_style+r"/paper.mplstyle")
 matplotlib.rcParams.update({'text.usetex': True})
@@ -35,7 +41,8 @@ matplotlib.rcParams['text.latex.preamble']=r"\usepackage{amsmath}"
 fitter_pros = PS.Prospect()
 fitter_neos = NEOS.Neos()
 fitter_daya = DB.DayaBay()
-
+fitter_dane = GF.GlobalFit() # Actually DayaBay + NEOS minimized over nuisance parameter
+fitter_best = BEST.Best()
 # We define a function to read the data in PlotData/
 # These data are produced by BSSterileFitTableX.py  or BSSterileFitTableX.py
 
@@ -47,7 +54,7 @@ def getChi2(mass,angl,b,broad_sterile = False):
     else:
         model = Models.BroadSterileNull(Sin22Th14 = angl, DM2_41 = mass, bvalue = b)
 
-    chi2 = fitter_neos.get_chi2(model)+fitter_daya.get_poisson_chi2(model)+fitter_pros.get_chi2(model)
+    chi2 = fitter_dane.get_chi2(model)+fitter_pros.get_chi2(model)
     return chi2
 
 # We apply a common style to all plots
@@ -126,10 +133,9 @@ STANDARD DELTA FUNCTION MASS STATES FORMALISM
 
 print('Standard')
 # We load the data from PROSPECT, NEOS, and DayaBay
-mass_PW = np.load(datadir_pros+'PWSterileMass_noint.npy')
-angle_PW = np.load(datadir_pros+'PWSterileAngle_noint.npy')
-chi2_PW = np.add(np.load(datadir_pros+'PWSterileChi2_noint.npy'),np.load(datadir_neos+'PWSterileChi2_int.npy'),np.load(datadir_daya+'PWSterileChi2_noint.npy'))
-#chi2_PW = np.add(np.load(datadir_neos+'PWSterileChi2_p2.npy'),np.load(datadir_daya+'PWSterileChi2_noint.npy'))
+mass_PW = np.load(datadir_pros+'PWSterileMass_test.npy')
+angle_PW = np.load(datadir_pros+'PWSterileAngle_test.npy')
+chi2_PW = np.add(np.load(datadir_pros+'PWSterileChi2_test.npy'),np.load(datadir_dane+'PWSterileChi2_test.npy'))
 # We find which is the point with minimum chi2, i.e. our best fit.
 min_index_PW = np.where(chi2_PW[:] == np.min(chi2_PW[:]))[0]
 bestfit = chi2_PW[min_index_PW]
@@ -150,7 +156,7 @@ axBF.scatter(angle_PW[min_index_PW],mass_PW[min_index_PW],marker = '+', label = 
 stylize(axBF)
 
 figBF.suptitle(r'Best fit:  $\Delta m^2_{41} = %.2f \textrm{ eV}^2$, $\sin^2 2\theta_{14} = %.3f$. Total $\chi^2 = %.2f$'%(mass_PW[min_index_PW],angle_PW[min_index_PW], bestfit), fontsize = titlesize)
-figBF.savefig(plotdir+'PWContour_bestfit.png')
+figBF.savefig(plotdir+'PWContour_bestfit_test.png')
 
 
 # PLOT WITH RESPECT TO THE NULL HYPOTHESIS
@@ -165,7 +171,7 @@ axNH.scatter(angle_PW[min_index_PW],mass_PW[min_index_PW],marker = '+', label = 
 stylize(axNH)
 
 figNH.suptitle('Null hypothesis: total $\chi^2 = %.2f$'%(null_hyp_PW), fontsize = titlesize)
-figNH.savefig(plotdir+'PWContour_nullhyp.png')
+figNH.savefig(plotdir+'PWContour_nullhyp_test.png')
 
 """
 -------------------------------------------------
@@ -174,35 +180,20 @@ BROAD STERILE FORMALISM
 """
 
 print('Broad')
-# load data with mass range 0.08-2
+
 m_n1 = 60
 a_n1 = 60
 b_n1 = 60
-datmass1 = np.logspace(np.log10(0.08),np.log10(2),m_n1) #0.08-2
+datmass1 = np.logspace(np.log10(0.08),1,m_n1) #0.08-10
 datangl1 = np.logspace(np.log10(4e-3),0,a_n1) #0.004-1
 datab1 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n1) #fractional breadth
-chi2_BS_1 = np.add(np.load(datadir_pros+'BroadSterileChi2_0.08-2.npy'),np.load(datadir_neos+'BroadSterileChi2_0.08-2.npy'),np.load(datadir_daya+'BroadSterileChi2_0.08-2.npy'))
+chi2_BS_1 = np.add(np.load(datadir_pros+'BroadSterileChi2_test1.npy'),np.load(datadir_dane+'BroadSterileChi2_test1.npy'))
 #chi2_BS_1 = np.add(np.load(datadir_neos+'BroadSterileChi2_frac.npy'),np.load(datadir_daya+'BroadSterileChi2_frac.npy'))
-# load data with mass range 2-10
-m_n2 = 60
-a_n2 = 60
-b_n2 = 60
-datmass2 = np.logspace(np.log10(2),np.log10(10),m_n2) #2-10
-datangl2 = np.logspace(np.log10(4e-3),0,a_n2) #0.004-1
-datab2 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n2) #fractional breadth
-chi2_BS_2 = np.add(np.load(datadir_pros+'BroadSterileChi2_2-10.npy'),np.load(datadir_neos+'BroadSterileChi2_2-10.npy'),np.load(datadir_daya+'BroadSterileChi2_2-10.npy'))
-#chi2_BS_2 = np.add(np.load(datadir_neos+'BroadSterileChi2_2-10.npy'),np.load(datadir_daya+'BroadSterileChi2_2-10.npy'))
 
 best_mass_1, best_angle_1, bestfit_1, mass_BS_1, angle_BS_1, min_chi2_BS_1, mass_ax_1, angle_ax_1 = marg_over_b(m_n1,a_n1,b_n1,datmass1,datangl1,chi2_BS_1)
-best_mass_2, best_angle_2, bestfit_2, mass_BS_2, angle_BS_2, min_chi2_BS_2, mass_ax_2, angle_ax_2 = marg_over_b(m_n2,a_n2,b_n2,datmass2,datangl2,chi2_BS_2)
 
-# choose the bestfit from 2 data files
-if bestfit_1 == min(bestfit_1,bestfit_2):
-    bestmass, bestangle, bestfit_BS = best_mass_1, best_angle_1, bestfit_1
-else:
-    bestmass, bestangle, bestfit_BS = best_mass_2, best_angle_2, bestfit_2
 
-print('Best fit values and chi2: ', bestmass, bestangle, bestfit_BS)
+print('Best fit values and chi2: ', best_mass_1, best_angle_1, bestfit_1)
 
 # We find which is the chi2 of the null hypothesis. Use np.sinc in models for this.
 null_hyp_BS = getChi2(0,0,0, broad_sterile = True)
@@ -213,15 +204,14 @@ print('Null hyp chi2: ',null_hyp_BS)
 # ----------------------------------
 figBF,axBF = plt.subplots(figsize = size,gridspec_kw=margins)
 
-conts1 = axBF.tricontour(angle_BS_1,mass_BS_1,(min_chi2_BS_1-bestfit_BS),levels = [2.30,6.18,11.83],  colors = [color1,color2,color3])
-conts2 = axBF.tricontour(angle_BS_2,mass_BS_2,(min_chi2_BS_2-bestfit_BS),levels = [2.30,6.18,11.83],  colors = [color1,color2,color3])
-axBF.scatter(bestangle,bestmass,marker = '+', label = r'Best fit')
+conts1 = axBF.tricontour(angle_BS_1,mass_BS_1,(min_chi2_BS_1-bestfit_1),levels = [2.30,6.18,11.83],  colors = [color1,color2,color3])
+axBF.scatter(best_angle_1,best_mass_1,marker = '+', label = r'Best fit')
 # axBF.scatter(data_BS[:,1],data_BS[:,0],marker = '+', s = 1.) # This tells us the resolution of our table
 
 stylize(axBF)
 
-figBF.suptitle(r'Best fit:  $\Delta m^2_{41} = %.2f \textrm{ eV}^2$, $\sin^2 2\theta_{14} = %.3f$. Total $\chi^2 = %.2f$'%(bestmass,bestangle, bestfit_BS), fontsize = titlesize)
-figBF.savefig(plotdir+'Broad_bestfit_marg.png')
+figBF.suptitle(r'Best fit:  $\Delta m^2_{41} = %.2f \textrm{ eV}^2$, $\sin^2 2\theta_{14} = %.3f$. Total $\chi^2 = %.2f$'%(best_mass_1,best_angle_1, bestfit_1), fontsize = titlesize)
+figBF.savefig(plotdir+'Broad_bestfit_marg_test.png')
 
 # PLOT WITH RESPECT TO THE NULL HYPOTHESIS
 # -----------------------------------------
@@ -229,25 +219,49 @@ figBF.savefig(plotdir+'Broad_bestfit_marg.png')
 figNH,axNH = plt.subplots(figsize = size, gridspec_kw = margins)
 
 conts1_NH = axNH.tricontour(angle_BS_1, mass_BS_1,(min_chi2_BS_1-null_hyp_BS),levels = [2.30,6.18,11.83],  colors = [color1,color2,color3])
-conts2_NH = axNH.tricontour(angle_BS_2, mass_BS_2,(min_chi2_BS_2-null_hyp_BS),levels = [2.30,6.18,11.83],  colors = [color1,color2,color3])
-axNH.scatter(bestangle,bestmass,marker = '+', label = r'Best fit')
+axNH.scatter(best_angle_1,best_mass_1,marker = '+', label = r'Best fit')
 # axNH.scatter(angle_BS_1[:,1],mass_BS_1[:,0],marker = '+', s = 1.) # This tells us the resolution of our table
 stylize(axNH)
 
 figNH.suptitle('Null hypothesis: total $\chi^2 = %.2f$'%(null_hyp_BS), fontsize = titlesize)
-figNH.savefig(plotdir+'Broad_nullhyp_marg.png')
+figNH.savefig(plotdir+'Broad_nullhyp_marg_test.png')
 
 # ----------------------------------------------
-# 2SIGMA PLOT COMPARISON (WITH RESPECT TO NULL HYP)
+# 2SIGMA PLOT COMPARISON (REACTOR WITH RESPECT TO NULL HYP; BEST WITH RESPECT TO BEST FIT)
 # ----------------------------------------------
+
+# Load BEST plane wave data
+mass_PW_BEST = np.load(datadir_best+'PWSterileMass.npy')
+angle_PW_BEST = np.load(datadir_best+'PWSterileAngle.npy')
+chi2_PW_BEST = np.load(datadir_best+'PWSterileChi2.npy')
+# We find which is the point with minimum chi2, i.e. our best fit.
+min_index_PW_BEST = np.where(chi2_PW_BEST[:] == np.min(chi2_PW_BEST[:]))[0]
+bestfit_PW_BEST = chi2_PW_BEST[min_index_PW_BEST]
+print('BEST original best fit values and chi2: ', mass_PW_BEST[min_index_PW_BEST], angle_PW_BEST[min_index_PW_BEST], bestfit_PW_BEST)
+
+# Load BEST broad data
+m_n_BEST = 60
+a_n_BEST = 60
+b_n_BEST = 60
+datmassBEST = np.linspace(0.08,10,m_n_BEST) #0.08-10
+datanglBEST = np.linspace(4e-3,1,a_n_BEST) #0.004-1
+databBEST = np.logspace(np.log10(1e-4),np.log10(0.99),b_n_BEST) #fractional breadth
+chi2_BS_BEST = np.load(datadir_best+'BroadSterileChi2_frac.npy')
+best_mass_BEST, best_angle_BEST, bestfit_BEST, mass_BS_BEST, angle_BS_BEST, min_chi2_BS_BEST, mass_ax_BEST, angle_ax_BEST = marg_over_b(m_n_BEST,a_n_BEST,b_n_BEST,datmassBEST,datanglBEST,chi2_BS_BEST)
+print('BEST broad best fit values and chi2: ', best_mass_BEST, best_angle_BEST, bestfit_BEST)
+
+
 margins = dict(left=0.16, right=0.97,bottom=0.1, top=0.97)
 fig_comp,ax_comp = plt.subplots(figsize = size, gridspec_kw = margins)
-cont_PW = ax_comp.tricontour(angle_PW, mass_PW,(chi2_PW-null_hyp_PW),levels = [6.18],  colors = color2, linestyles = ['solid'])
+cont_PW = ax_comp.tricontour(angle_PW, mass_PW,(chi2_PW-null_hyp_PW),levels = [6.18],  colors = color2, linestyles = ['solid'], zorder = 10)
 ax_comp.scatter(angle_PW[min_index_PW],mass_PW[min_index_PW],marker = '+', color='r', label = r'Original best fit')
-cont_BS1 = ax_comp.tricontour(angle_BS_1, mass_BS_1,(min_chi2_BS_1-null_hyp_BS),levels = [6.18],  colors = color3, linestyles = ['solid'])
-cont_BS2 = ax_comp.tricontour(angle_BS_2, mass_BS_2,(min_chi2_BS_2-null_hyp_BS),levels = [6.18],  colors = color3, linestyles = ['solid'])
-ax_comp.scatter(bestangle,bestmass,marker = '+', color='c', label = r'Our best fit')
-ax_comp.annotate('Global', xy = (5e-3,6), size = 42)
+cont_BS1 = ax_comp.tricontour(angle_BS_1, mass_BS_1,(min_chi2_BS_1-null_hyp_BS),levels = [6.18],  colors = color3, linestyles = ['solid'], zorder = 20)
+ax_comp.scatter(best_angle_1,best_mass_1,marker = '+', color='c', label = r'Our best fit')
+cont_BEST_PW_patch = ax_comp.tricontourf(angle_PW_BEST,mass_PW_BEST,(chi2_PW_BEST-bestfit_PW_BEST), levels = [0.0,6.18], colors = color2, alpha = 0.3, zorder = 6)
+cont_BEST_BS_patch = ax_comp.tricontourf(angle_BS_BEST,mass_BS_BEST,(min_chi2_BS_BEST-bestfit_BEST), levels = [0.0,6.18], colors = color3, alpha = 0.3, zorder = 5)
+cont_BEST_PW = ax_comp.tricontour(angle_PW_BEST,mass_PW_BEST,(chi2_PW_BEST-bestfit_PW_BEST), levels = [6.18], colors = color2, linewidths = 1,zorder = 6.5)
+cont_BEST_BS = ax_comp.tricontour(angle_BS_BEST,mass_BS_BEST,(min_chi2_BS_BEST-bestfit_BEST), levels = [6.18], colors = color3, linewidths = 1,zorder = 5.5)
+ax_comp.annotate('Global', xy = (5e-3,0.1), size = 30)
 ax_comp.grid(linestyle = '--')
 ax_comp.tick_params(axis='x')
 ax_comp.tick_params(axis='y')
@@ -259,10 +273,12 @@ ax_comp.set_xlim([0.004,1])
 ax_comp.set_ylim([0.08,10])
 legend_elements = [Line2D([0], [0], color=color2, ls = '-', lw=2, label=r'$2\sigma$ Delta Function'),
                    Line2D([0], [0], color=color3, ls = '-', lw=2, label=r'$2\sigma$ Broad Sterile'),
+                   plt.Rectangle((0.1,0.1),0.8,0.8,fc = color2, alpha = 0.3, label=r'BEST $2\sigma$ Delta'),
+                   plt.Rectangle((0.1,0.1),0.8,0.8,fc = color3, alpha = 0.3, label=r'BEST $2\sigma$ Broad'),
                    Line2D([0], [0], marker='+', color='r', lw = 0, label='Original Best Fit', markerfacecolor='b', markersize=8),
                    Line2D([0], [0], marker='+', color='c', lw = 0, label='Broad Best Fit', markerfacecolor='b', markersize=8)]
-ax_comp.legend(handles = legend_elements, loc = 'lower left', fontsize = 16)
+ax_comp.legend(handles = legend_elements, loc = 'upper left', fontsize = 12)
 
-fig_comp.savefig(plotdir+'ContourComparison_nullhyp.png')
+fig_comp.savefig(plotdir+'ContourComparison_nullhyp_test.png')
 
 #print(fitter.get_chi2(Models.BroadSterileFrac(Sin22Th14 = 0.27, DM2_41 = 0.57, bfrac = 0.99)))
