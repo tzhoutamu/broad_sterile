@@ -34,3 +34,6 @@
 # Python cache
 *.pyc
 *-checkpoint.ipynb
+GlobalFit/.DS_Store
+.DS_Store
+.DS_Store

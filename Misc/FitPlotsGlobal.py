@@ -133,13 +133,17 @@ STANDARD DELTA FUNCTION MASS STATES FORMALISM
 
 print('Standard')
 # We load the data from PROSPECT, NEOS, and DayaBay
-mass_PW = np.load(datadir_pros+'PWSterileMass_test.npy')
-angle_PW = np.load(datadir_pros+'PWSterileAngle_test.npy')
-chi2_PW = np.add(np.load(datadir_pros+'PWSterileChi2_test.npy'),np.load(datadir_dane+'PWSterileChi2_test.npy'))
+mass_PW = np.load(datadir_pros+'PWSterileMass_8e-2_10.npy') # 0.08-10 in 180 steps
+angle_PW = np.load(datadir_pros+'PWSterileAngle_4e-3_1.npy') # 4e-3 to 1 in 180 steps
+chi2_PW = np.add(np.load(datadir_pros+'PWSterileChi2_180*180.npy'),np.load(datadir_dane+'PWSterileChi2_180*180.npy'))
 # We find which is the point with minimum chi2, i.e. our best fit.
+
+print('PROSPECT best-fit chi2: ', np.min(np.load(datadir_pros+'PWSterileChi2_180*180.npy')))
+print('NEOS and DayaBay best-fit chi2: ', np.min(np.load(datadir_dane+'PWSterileChi2_180*180.npy')))
+
 min_index_PW = np.where(chi2_PW[:] == np.min(chi2_PW[:]))[0]
 bestfit = chi2_PW[min_index_PW]
-print('Best fit values and chi2: ', mass_PW[min_index_PW], angle_PW[min_index_PW], bestfit)
+print('Reactor Global best fit values and chi2: ', mass_PW[min_index_PW], angle_PW[min_index_PW], bestfit)
 
 # We find which is the chi2 of the null hypothesis
 null_hyp_PW = getChi2(0,0,0,broad_sterile=False)
@@ -156,7 +160,7 @@ axBF.scatter(angle_PW[min_index_PW],mass_PW[min_index_PW],marker = '+', label = 
 stylize(axBF)
 
 figBF.suptitle(r'Best fit:  $\Delta m^2_{41} = %.2f \textrm{ eV}^2$, $\sin^2 2\theta_{14} = %.3f$. Total $\chi^2 = %.2f$'%(mass_PW[min_index_PW],angle_PW[min_index_PW], bestfit), fontsize = titlesize)
-figBF.savefig(plotdir+'PWContour_bestfit_test.png')
+figBF.savefig(plotdir+'PWContour_bestfit_new.png')
 
 
 # PLOT WITH RESPECT TO THE NULL HYPOTHESIS
@@ -171,7 +175,7 @@ axNH.scatter(angle_PW[min_index_PW],mass_PW[min_index_PW],marker = '+', label = 
 stylize(axNH)
 
 figNH.suptitle('Null hypothesis: total $\chi^2 = %.2f$'%(null_hyp_PW), fontsize = titlesize)
-figNH.savefig(plotdir+'PWContour_nullhyp_test.png')
+figNH.savefig(plotdir+'PWContour_nullhyp_new.png')
 
 """
 -------------------------------------------------
@@ -190,10 +194,13 @@ datab1 = np.logspace(np.log10(1e-4),np.log10(0.99),b_n1) #fractional breadth
 chi2_BS_1 = np.add(np.load(datadir_pros+'BroadSterileChi2_test1.npy'),np.load(datadir_dane+'BroadSterileChi2_test1.npy'))
 #chi2_BS_1 = np.add(np.load(datadir_neos+'BroadSterileChi2_frac.npy'),np.load(datadir_daya+'BroadSterileChi2_frac.npy'))
 
+print('PROSPECT best-fit chi2: ', np.min(np.load(datadir_pros+'BroadSterileChi2_test1.npy')))
+print('NEOS and DayaBay best-fit chi2: ', np.min(np.load(datadir_dane+'BroadSterileChi2_test1.npy')))
+
 best_mass_1, best_angle_1, bestfit_1, mass_BS_1, angle_BS_1, min_chi2_BS_1, mass_ax_1, angle_ax_1 = marg_over_b(m_n1,a_n1,b_n1,datmass1,datangl1,chi2_BS_1)
 
 
-print('Best fit values and chi2: ', best_mass_1, best_angle_1, bestfit_1)
+print('Reactor global best fit values and chi2: ', best_mass_1, best_angle_1, bestfit_1)
 
 # We find which is the chi2 of the null hypothesis. Use np.sinc in models for this.
 null_hyp_BS = getChi2(0,0,0, broad_sterile = True)
@@ -231,8 +238,8 @@ figNH.savefig(plotdir+'Broad_nullhyp_marg_test.png')
 # ----------------------------------------------
 
 # Load BEST plane wave data
-mass_PW_BEST = np.load(datadir_best+'PWSterileMass.npy')
-angle_PW_BEST = np.load(datadir_best+'PWSterileAngle.npy')
+mass_PW_BEST = np.load(datadir_best+'PWSterileMass.npy') # 0.08-10 in 160 steps
+angle_PW_BEST = np.load(datadir_best+'PWSterileAngle.npy') # 0.004-1 in 160 steps
 chi2_PW_BEST = np.load(datadir_best+'PWSterileChi2.npy')
 # We find which is the point with minimum chi2, i.e. our best fit.
 min_index_PW_BEST = np.where(chi2_PW_BEST[:] == np.min(chi2_PW_BEST[:]))[0]
@@ -251,7 +258,7 @@ best_mass_BEST, best_angle_BEST, bestfit_BEST, mass_BS_BEST, angle_BS_BEST, min_
 print('BEST broad best fit values and chi2: ', best_mass_BEST, best_angle_BEST, bestfit_BEST)
 
 
-margins = dict(left=0.16, right=0.97,bottom=0.1, top=0.97)
+margins = dict(left=0.16, right=0.97,bottom=0.15, top=0.97)
 fig_comp,ax_comp = plt.subplots(figsize = size, gridspec_kw = margins)
 cont_PW = ax_comp.tricontour(angle_PW, mass_PW,(chi2_PW-null_hyp_PW),levels = [6.18],  colors = color2, linestyles = ['solid'], zorder = 10)
 ax_comp.scatter(angle_PW[min_index_PW],mass_PW[min_index_PW],marker = '+', color='r', label = r'Original best fit')
@@ -279,6 +286,6 @@ legend_elements = [Line2D([0], [0], color=color2, ls = '-', lw=2, label=r'$2\sig
                    Line2D([0], [0], marker='+', color='c', lw = 0, label='Broad Best Fit', markerfacecolor='b', markersize=8)]
 ax_comp.legend(handles = legend_elements, loc = 'upper left', fontsize = 12)
 
-fig_comp.savefig(plotdir+'ContourComparison_nullhyp_test.png')
+fig_comp.savefig(plotdir+'ContourComparison_nullhyp_new.png')
 
-#print(fitter.get_chi2(Models.BroadSterileFrac(Sin22Th14 = 0.27, DM2_41 = 0.57, bfrac = 0.99)))
+#print(fitter_dane.get_chi2(Models.BroadSterileFrac(Sin22Th14 = 0.0472, DM2_41 = 1.732, bfrac = 1e-4)))
